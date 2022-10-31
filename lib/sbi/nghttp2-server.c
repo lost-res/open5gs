@@ -391,10 +391,15 @@ static bool server_send_rspmem_persistent(
 
     ogs_assert(response);
 
+    if (response->status >= 600) {
+        ogs_error("Invalid response status [%d]", response->status);
+        return false;
+    }
+
     stream = ogs_pool_cycle(&stream_pool, stream);
     if (!stream) {
         ogs_error("stream has already been removed");
-        return true;
+        return false;
     }
 
     sbi_sess = stream->session;
@@ -416,11 +421,13 @@ static bool server_send_rspmem_persistent(
         nvlen++;
 
     nva = ogs_calloc(nvlen, sizeof(nghttp2_nv));
-    ogs_expect_or_return_val(nva, false);
+    if (!nva) {
+        ogs_error("ogs_calloc() failed");
+        return false;
+    }
 
     i = 0;
 
-    ogs_expect_or_return_val(response->status < 600, false);
     ogs_assert(strlen(status_string[response->status]) == 3);
     add_header(&nva[i++], ":status", status_string[response->status]);
 
@@ -510,11 +517,18 @@ static ogs_sbi_stream_t *stream_add(
     ogs_assert(sbi_sess);
 
     ogs_pool_alloc(&stream_pool, &stream);
-    ogs_expect_or_return_val(stream, NULL);
+    if (!stream) {
+        ogs_error("ogs_pool_alloc() failed");
+        return NULL;
+    }
     memset(stream, 0, sizeof(ogs_sbi_stream_t));
 
     stream->request = ogs_sbi_request_new();
-    ogs_expect_or_return_val(stream->request, NULL);
+    if (!stream->request) {
+        ogs_error("ogs_sbi_request_new() failed");
+        ogs_pool_free(&stream_pool, stream);
+        return NULL;
+    }
 
     stream->stream_id = stream_id;
     sbi_sess->last_stream_id = stream_id;
@@ -561,19 +575,31 @@ static ogs_sbi_session_t *session_add(
     ogs_assert(sock);
 
     ogs_pool_alloc(&session_pool, &sbi_sess);
-    ogs_expect_or_return_val(sbi_sess, NULL);
+    if (!sbi_sess) {
+        ogs_error("ogs_pool_alloc() failed");
+        return NULL;
+    }
     memset(sbi_sess, 0, sizeof(ogs_sbi_session_t));
 
     sbi_sess->server = server;
     sbi_sess->sock = sock;
 
     sbi_sess->addr = ogs_calloc(1, sizeof(ogs_sockaddr_t));
-    ogs_expect_or_return_val(sbi_sess->addr, NULL);
+    if (!sbi_sess->addr) {
+        ogs_error("ogs_calloc() failed");
+        ogs_pool_free(&session_pool, sbi_sess);
+        return NULL;
+    }
     memcpy(sbi_sess->addr, &sock->remote_addr, sizeof(ogs_sockaddr_t));
 
     if (server->ssl_ctx) {
         sbi_sess->ssl = SSL_new(server->ssl_ctx);
-        ogs_expect_or_return_val(sbi_sess->ssl, NULL);
+        if (!sbi_sess->ssl) {
+            ogs_error("SSL_new() failed");
+            ogs_pool_free(&session_pool, sbi_sess);
+            ogs_free(sbi_sess->addr);
+            return NULL;
+        }
     }
 
     ogs_list_add(&server->session_list, sbi_sess);
@@ -598,8 +624,8 @@ static void session_remove(ogs_sbi_session_t *sbi_sess)
     stream_remove_all(sbi_sess);
     nghttp2_session_del(sbi_sess->session);
 
-    ogs_assert(sbi_sess->poll.read);
-    ogs_pollset_remove(sbi_sess->poll.read);
+    if (sbi_sess->poll.read)
+        ogs_pollset_remove(sbi_sess->poll.read);
 
     if (sbi_sess->poll.write)
         ogs_pollset_remove(sbi_sess->poll.write);
@@ -666,8 +692,7 @@ static void accept_handler(short when, ogs_socket_t fd, void *data)
         SSL_set_accept_state(sbi_sess->ssl);
         err = SSL_accept(sbi_sess->ssl);
         if (err <= 0) {
-            ogs_error("SSL_accept failed: %s", ERR_error_string(ERR_get_error(), NULL));
-            ogs_sock_destroy(new);
+            ogs_error("SSL_accept failed [%s]", ERR_error_string(ERR_get_error(), NULL));
             session_remove(sbi_sess);
             return;
         }

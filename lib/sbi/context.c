@@ -1654,6 +1654,10 @@ ogs_sbi_xact_t *ogs_sbi_xact_add(
     ogs_assert(sbi_object);
 
     ogs_pool_alloc(&xact_pool, &xact);
+    if (!xact) {
+        ogs_error("ogs_pool_alloc() failed");
+        return NULL;
+    }
     ogs_expect_or_return_val(xact, NULL);
     memset(xact, 0, sizeof(ogs_sbi_xact_t));
 
