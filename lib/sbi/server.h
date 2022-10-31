@@ -39,7 +39,7 @@ typedef struct ogs_sbi_server_s {
 
     struct {
         const char  *key;
-        const char  *pem;
+        const char  *cert;
     } tls;
 
     SSL_CTX *ssl_ctx;

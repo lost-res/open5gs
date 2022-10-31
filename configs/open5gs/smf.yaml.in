@@ -40,14 +40,14 @@ logger:
 #    sbi:
 #      - tls:
 #          key: smf.key
-#          pem: smf.pem
+#          cert: smf.crt
 #
 #  o SBI Server(https://127.0.0.4:443, http://[::1]:80)
 #    sbi:
 #      - addr: 127.0.0.4
 #        tls:
 #          key: smf.key
-#          pem: smf.pem
+#          cert: smf.crt
 #      - addr: ::1
 #
 #  o SBI Server(http://smf.open5gs.org:80)
@@ -498,7 +498,7 @@ smf:
 #      - addr: 127.0.1.10
 #        tls:
 #          key: scp.key
-#          pem: scp.pem
+#          cert: scp.crt
 #      - name: scp.open5gs.org
 #
 #  o SBI Client(http://[fd69:f21d:873c:fb::1]:80)
@@ -542,7 +542,7 @@ scp:
 #      - addr: 127.0.0.10
 #        tls:
 #          key: nrf.key
-#          pem: nrf.pem
+#          cert: nrf.crt
 #      - name: nrf.open5gs.org
 #
 #  o SBI Client(http://[fd69:f21d:873c:fa::1]:80)

@@ -206,7 +206,7 @@ int ogs_sbi_context_parse_config(
                         int num_of_advertise = 0;
                         const char *advertise[OGS_MAX_NUM_OF_HOSTNAME];
                         const char *key = NULL;
-                        const char *pem = NULL;
+                        const char *cert = NULL;
 
                         uint16_t port = self.sbi_port;
                         const char *dev = NULL;
@@ -311,8 +311,8 @@ int ogs_sbi_context_parse_config(
 
                                     if (!strcmp(tls_key, "key")) {
                                         key = ogs_yaml_iter_value(&tls_iter);
-                                    } else if (!strcmp(tls_key, "pem")) {
-                                        pem = ogs_yaml_iter_value(&tls_iter);
+                                    } else if (!strcmp(tls_key, "cert")) {
+                                        cert = ogs_yaml_iter_value(&tls_iter);
                                     } else
                                         ogs_warn("unknown key `%s`", tls_key);
                                 }
@@ -366,7 +366,7 @@ int ogs_sbi_context_parse_config(
                                         server, AF_INET, addr);
 
                             if (key) server->tls.key = key;
-                            if (pem) server->tls.pem = pem;
+                            if (cert) server->tls.cert = cert;
                         }
                         node6 = ogs_list_first(&list6);
                         if (node6) {
@@ -379,7 +379,7 @@ int ogs_sbi_context_parse_config(
                                         server, AF_INET6, addr);
 
                             if (key) server->tls.key = key;
-                            if (pem) server->tls.pem = pem;
+                            if (cert) server->tls.cert = cert;
                         }
 
                         if (addr)
@@ -496,7 +496,7 @@ int ogs_sbi_context_parse_config(
                         const char *hostname[OGS_MAX_NUM_OF_HOSTNAME];
                         uint16_t port = self.sbi_port;
                         const char *key = NULL;
-                        const char *pem = NULL;
+                        const char *cert = NULL;
 
                         if (ogs_yaml_iter_type(&sbi_array) ==
                                 YAML_MAPPING_NODE) {
@@ -563,8 +563,8 @@ int ogs_sbi_context_parse_config(
 
                                     if (!strcmp(tls_key, "key")) {
                                         key = ogs_yaml_iter_value(&tls_iter);
-                                    } else if (!strcmp(tls_key, "pem")) {
-                                        pem = ogs_yaml_iter_value(&tls_iter);
+                                    } else if (!strcmp(tls_key, "cert")) {
+                                        cert = ogs_yaml_iter_value(&tls_iter);
                                     } else
                                         ogs_warn("unknown key `%s`", tls_key);
                                 }
@@ -593,7 +593,7 @@ int ogs_sbi_context_parse_config(
                         OGS_SBI_SETUP_CLIENT(self.nrf_instance, client);
 
                         if (key) client->tls.key = key;
-                        if (pem) client->tls.pem = pem;
+                        if (cert) client->tls.cert = cert;
 
                         ogs_freeaddrinfo(addr);
 
@@ -619,7 +619,7 @@ int ogs_sbi_context_parse_config(
                         const char *hostname[OGS_MAX_NUM_OF_HOSTNAME];
                         uint16_t port = self.sbi_port;
                         const char *key = NULL;
-                        const char *pem = NULL;
+                        const char *cert = NULL;
 
                         if (ogs_yaml_iter_type(&sbi_array) ==
                                 YAML_MAPPING_NODE) {
@@ -686,8 +686,8 @@ int ogs_sbi_context_parse_config(
 
                                     if (!strcmp(tls_key, "key")) {
                                         key = ogs_yaml_iter_value(&tls_iter);
-                                    } else if (!strcmp(tls_key, "pem")) {
-                                        pem = ogs_yaml_iter_value(&tls_iter);
+                                    } else if (!strcmp(tls_key, "cert")) {
+                                        cert = ogs_yaml_iter_value(&tls_iter);
                                     } else
                                         ogs_warn("unknown key `%s`", tls_key);
                                 }
@@ -716,7 +716,7 @@ int ogs_sbi_context_parse_config(
                         OGS_SBI_SETUP_CLIENT(self.scp_instance, client);
 
                         if (key) client->tls.key = key;
-                        if (pem) client->tls.pem = pem;
+                        if (cert) client->tls.cert = cert;
 
                         ogs_freeaddrinfo(addr);
 
@@ -1333,7 +1333,7 @@ ogs_sbi_nf_service_t *ogs_sbi_nf_service_build_default(
     ogs_list_for_each(&ogs_sbi_self()->server_list, server) {
         OpenAPI_uri_scheme_e s;
 
-        if (server->tls.key && server->tls.pem)
+        if (server->tls.key && server->tls.cert)
             s = OpenAPI_uri_scheme_https;
         else
             s = OpenAPI_uri_scheme_http;

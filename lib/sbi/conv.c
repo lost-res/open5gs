@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 by Sukchan Lee <acetcom@gmail.com>
+ * Copyright (C) 2019-2022 by Sukchan Lee <acetcom@gmail.com>
  *
  * This file is part of Open5GS.
  *
@@ -83,7 +83,7 @@ char *ogs_sbi_server_uri(ogs_sbi_server_t *server, ogs_sbi_header_t *h)
 
     ogs_assert(server);
 
-    if (server->tls.key && server->tls.pem)
+    if (server->tls.key && server->tls.cert)
         https = true;
 
     advertise = server->advertise;
@@ -101,7 +101,7 @@ char *ogs_sbi_client_uri(ogs_sbi_client_t *client, ogs_sbi_header_t *h)
 
     ogs_assert(client);
 
-    if (client->tls.key && client->tls.pem)
+    if (client->tls.key && client->tls.cert)
         https = true;
     else if (client->scheme == OpenAPI_uri_scheme_https)
         https = true;

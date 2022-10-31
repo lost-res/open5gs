@@ -201,8 +201,8 @@ static int server_start(ogs_sbi_server_t *server,
     ogs_assert(addr);
 
     /* Create SSL CTX */
-    if (server->tls.key && server->tls.pem) {
-        server->ssl_ctx = create_ssl_ctx(server->tls.key, server->tls.pem);
+    if (server->tls.key && server->tls.cert) {
+        server->ssl_ctx = create_ssl_ctx(server->tls.key, server->tls.cert);
         if (!server->ssl_ctx) {
             ogs_error("Cannot create SSL CTX");
             return OGS_ERROR;

@@ -60,7 +60,7 @@ typedef struct ogs_sbi_client_s {
 
     struct {
         const char  *key;
-        const char  *pem;
+        const char  *cert;
     } tls;
 
     ogs_timer_t     *t_curl;            /* timer for CURL */
