@@ -160,14 +160,15 @@ char *ogs_sbi_parse_uri(char *uri, const char *delim, char **saveptr)
     return item;
 }
 
-ogs_sockaddr_t *ogs_sbi_getaddr_from_uri(char *uri)
+bool ogs_sbi_getaddr_from_uri(
+        OpenAPI_uri_scheme_e *scheme, ogs_sockaddr_t **addr, char *uri)
 {
     int rv;
     struct yuarel yuarel;
     char *p = NULL;
     int port;
 
-    ogs_sockaddr_t *addr = NULL;
+    ogs_assert(uri);
 
     p = ogs_strdup(uri);
 
@@ -175,64 +176,67 @@ ogs_sockaddr_t *ogs_sbi_getaddr_from_uri(char *uri)
     if (rv != OGS_OK) {
         ogs_free(p);
         ogs_error("yuarel_parse() failed [%s]", uri);
-        return NULL;
+        return false;
     }
 
     if (!yuarel.scheme) {
         ogs_error("No http.scheme found [%s]", uri);
         ogs_free(p);
-        return NULL;
+        return false;
     }
 
     if (strcmp(yuarel.scheme, "https") == 0) {
         port = OGS_SBI_HTTPS_PORT;
+        *scheme = OpenAPI_uri_scheme_https;
     } else if (strcmp(yuarel.scheme, "http") == 0) {
         port = OGS_SBI_HTTP_PORT;
+        *scheme = OpenAPI_uri_scheme_http;
     } else {
         ogs_error("Invalid http.scheme [%s:%s]", yuarel.scheme, uri);
         ogs_free(p);
-        return NULL;
+        return false;
     }
 
     if (!yuarel.host) {
         ogs_error("No http.host found [%s]", uri);
         ogs_free(p);
-        return NULL;
+        return false;
     }
 
     if (yuarel.port) port = yuarel.port;
 
-    rv = ogs_getaddrinfo(&addr, AF_UNSPEC, yuarel.host, port, 0);
+    rv = ogs_getaddrinfo(addr, AF_UNSPEC, yuarel.host, port, 0);
     if (rv != OGS_OK) {
         ogs_error("ogs_getaddrinfo() failed [%s]", uri);
         ogs_free(p);
-        return NULL;
+        return false;
     }
 
     ogs_free(p);
-    return addr;
+    return true;
 }
 
-char *ogs_sbi_getpath_from_uri(char *uri)
+bool ogs_sbi_getpath_from_uri(char **path, char *uri)
 {
     int rv;
     struct yuarel yuarel;
     char *p = NULL;
-    char *path = NULL;
+
+    ogs_assert(uri);
 
     p = ogs_strdup(uri);
 
     rv = yuarel_parse(&yuarel, p);
     if (rv != OGS_OK) {
-        ogs_free(p);
         ogs_error("yuarel_parse() failed [%s]", uri);
-        return NULL;
+        ogs_free(p);
+        return false;
     }
 
     if (!yuarel.scheme) {
         ogs_error("No http.scheme found [%s]", uri);
         ogs_free(p);
-        return NULL;
+        return false;
     }
 
     if (strcmp(yuarel.scheme, "https") == 0) {
@@ -242,26 +246,26 @@ char *ogs_sbi_getpath_from_uri(char *uri)
     } else {
         ogs_error("Invalid http.scheme [%s:%s]", yuarel.scheme, uri);
         ogs_free(p);
-        return NULL;
+        return false;
     }
 
     if (!yuarel.host) {
         ogs_error("No http.host found [%s]", uri);
         ogs_free(p);
-        return NULL;
+        return false;
     }
 
     if (!yuarel.path) {
         ogs_error("No http.path found [%s]", uri);
         ogs_free(p);
-        return NULL;
+        return false;
     }
 
-    path = ogs_strdup(yuarel.path);
-    ogs_assert(path);
+    *path = ogs_strdup(yuarel.path);
+    ogs_assert(*path);
 
     ogs_free(p);
-    return path;
+    return true;
 }
 
 char *ogs_sbi_bitrate_to_string(uint64_t bitrate, int unit)

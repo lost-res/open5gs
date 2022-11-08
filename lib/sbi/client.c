@@ -665,7 +665,7 @@ bool ogs_sbi_client_send_via_scp(
         apiroot = ogs_sbi_client_apiroot(client);
         ogs_assert(apiroot);
 
-        path = ogs_sbi_getpath_from_uri(request->h.uri);
+        rc = ogs_sbi_getpath_from_uri(&path, request->h.uri);
         ogs_assert(path);
 
         request->h.uri = ogs_msprintf("%s/%s", apiroot, path);

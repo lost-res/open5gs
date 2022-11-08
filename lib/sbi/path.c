@@ -219,15 +219,18 @@ bool ogs_sbi_discover_and_send(ogs_sbi_xact_t *xact)
                     request->h.service.name, request->h.api.version);
         }
     } else {
+        bool rc;
+        OpenAPI_uri_scheme_e scheme = OpenAPI_uri_scheme_NULL;
         ogs_sockaddr_t *addr = NULL;
 
-        addr = ogs_sbi_getaddr_from_uri(request->h.uri);
-        if (!addr) {
+        rc = ogs_sbi_getaddr_from_uri(&scheme, &addr, request->h.uri);
+        if (rc == false || scheme == OpenAPI_uri_scheme_NULL) {
             ogs_error("Invalid URL [%s]", request->h.uri);
             return false;
         }
         client = ogs_sbi_client_find(addr);
         ogs_freeaddrinfo(addr);
+        client->scheme = scheme;
     }
 
     if (scp_client) {
@@ -385,11 +388,13 @@ bool ogs_sbi_send_request_to_nf_instance(
             return false;
         }
     } else {
+        bool rc;
+        OpenAPI_uri_scheme_e scheme = OpenAPI_uri_scheme_NULL;
         ogs_sockaddr_t *addr = NULL;
         char buf[OGS_ADDRSTRLEN];
 
-        addr = ogs_sbi_getaddr_from_uri(request->h.uri);
-        if (!addr) {
+        rc = ogs_sbi_getaddr_from_uri(&scheme, &addr, request->h.uri);
+        if (rc == false || scheme == OpenAPI_uri_scheme_NULL) {
             ogs_error("[%s:%s] Invalid URL [%s]",
                     OpenAPI_nf_type_ToString(nf_instance->nf_type),
                     nf_instance->id, request->h.uri);
@@ -405,6 +410,7 @@ bool ogs_sbi_send_request_to_nf_instance(
             return false;
         }
         ogs_freeaddrinfo(addr);
+        client->scheme = scheme;
     }
 
     ogs_expect_or_return_val(true ==
