@@ -21,14 +21,32 @@ meson.add_install_script(python3_exe, '-c',
 
 tls_security = '''
     ca.crt
-    mme.crt
-    mme.key
-    hss.crt
+    amf.key
+    ausf.key
+    bsf.key
     hss.key
-    smf.crt
-    smf.key
-    pcrf.crt
+    mme.key
+    nrf.key
+    nssf.key
+    pcf.key
     pcrf.key
+    scp.key
+    smf.key
+    udm.key
+    udr.key
+    amf.crt
+    ausf.crt
+    bsf.crt
+    hss.crt
+    mme.crt
+    nrf.crt
+    nssf.crt
+    pcf.crt
+    pcrf.crt
+    scp.crt
+    smf.crt
+    udm.crt
+    udr.crt
 '''.split()
 
 foreach file : tls_security
