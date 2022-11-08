@@ -1473,9 +1473,9 @@ static void nf_service_associate_client(ogs_sbi_nf_service_t *nf_service)
             client = ogs_sbi_client_find(addr);
             if (!client) {
                 client = ogs_sbi_client_add(addr);
-                client->scheme = nf_service->scheme;
                 ogs_assert(client);
             }
+            client->scheme = nf_service->scheme;
         }
     }
 
