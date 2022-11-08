@@ -16,25 +16,25 @@ openssl req -new -x509 -days 3650 -newkey rsa:2048 -nodes -keyout cakey.pem -out
     -subj /CN=ca.localdomain/C=KO/ST=Seoul/O=NeoPlane
 
 # mme
-openssl genrsa -out $1/mme.key.pem 2048
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/mme.key.pem
 openssl req -new -batch -out mme.csr.pem -key $1/mme.key.pem \
     -subj /CN=mme.localdomain/C=KO/ST=Seoul/O=NeoPlane
 openssl ca -cert $1/cacert.pem -days 3650 -keyfile cakey.pem -in mme.csr.pem -out $1/mme.cert.pem -outdir . -batch -notext
 
 # hss
-openssl genrsa -out $1/hss.key.pem 2048
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/hss.key.pem
 openssl req -new -batch -out hss.csr.pem -key $1/hss.key.pem \
     -subj /CN=hss.localdomain/C=KO/ST=Seoul/O=NeoPlane
 openssl ca -cert $1/cacert.pem -days 3650 -keyfile cakey.pem -in hss.csr.pem -out $1/hss.cert.pem -outdir . -batch -notext
 
 # smf
-openssl genrsa -out $1/smf.key.pem 2048
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/smf.key.pem
 openssl req -new -batch -out smf.csr.pem -key $1/smf.key.pem \
     -subj /CN=smf.localdomain/C=KO/ST=Seoul/O=NeoPlane
 openssl ca -cert $1/cacert.pem -days 3650 -keyfile cakey.pem -in smf.csr.pem -out $1/smf.cert.pem -outdir . -batch -notext
 
 # pcrf
-openssl genrsa -out $1/pcrf.key.pem 2048
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/pcrf.key.pem
 openssl req -new -batch -out pcrf.csr.pem -key $1/pcrf.key.pem \
     -subj /CN=pcrf.localdomain/C=KO/ST=Seoul/O=NeoPlane
 openssl ca -cert $1/cacert.pem -days 3650 -keyfile cakey.pem -in pcrf.csr.pem -out $1/pcrf.cert.pem -outdir . -batch -notext
