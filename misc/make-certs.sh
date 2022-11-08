@@ -15,33 +15,16 @@ touch demoCA/index.txt
 openssl req -new -x509 -days 3650 -newkey rsa:2048 -nodes -keyout $1/ca.key -out $1/ca.crt \
     -subj /CN=ca.localdomain/C=KO/ST=Seoul/O=NeoPlane
 
-# mme
-openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/mme.key
-openssl req -new -key $1/mme.key -out $1/mme.csr \
-    -subj /CN=mme.localdomain/C=KO/ST=Seoul/O=NeoPlane
-openssl ca -batch -notext -days 3650 \
-    -keyfile $1/ca.key -cert $1/ca.crt -in $1/mme.csr -out $1/mme.crt -outdir .
-
-# hss
-openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/hss.key
-openssl req -new -key $1/hss.key -out $1/hss.csr \
-    -subj /CN=hss.localdomain/C=KO/ST=Seoul/O=NeoPlane
-openssl ca -batch -notext -days 3650 \
-    -keyfile $1/ca.key -cert $1/ca.crt -in $1/hss.csr -out $1/hss.crt -outdir .
-
-# smf
-openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/smf.key
-openssl req -new -key $1/smf.key -out $1/smf.csr \
-    -subj /CN=smf.localdomain/C=KO/ST=Seoul/O=NeoPlane
-openssl ca -batch -notext -days 3650 \
-    -keyfile $1/ca.key -cert $1/ca.crt -in $1/smf.csr -out $1/smf.crt -outdir .
-
-# pcrf
-openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/pcrf.key
-openssl req -new -key $1/pcrf.key -out $1/pcrf.csr \
-    -subj /CN=pcrf.localdomain/C=KO/ST=Seoul/O=NeoPlane
-openssl ca -batch -notext -days 3650 \
-    -keyfile $1/ca.key -cert $1/ca.crt -in $1/pcrf.csr -out $1/pcrf.crt -outdir .
+for i in mme hss smf pcrf
+do
+    openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
+        -out $1/$i.key
+    openssl req -new -key $1/$i.key -out $1/$i.csr \
+        -subj /CN=$i.localdomain/C=KO/ST=Seoul/O=NeoPlane
+    openssl ca -batch -notext -days 3650 \
+        -keyfile $1/ca.key -cert $1/ca.crt \
+        -in $1/$i.csr -out $1/$i.crt -outdir .
+done
 
 rm -rf demoCA
-rm -f 01.pem 02.pem 03.pem 04.pem
+rm -f *.pem
