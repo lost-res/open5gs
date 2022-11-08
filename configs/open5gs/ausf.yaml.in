@@ -29,7 +29,7 @@ logger:
 #  o SBI Server(http://<all address available>:80)
 #    sbi:
 #
-#  o SBI Server(http://<any address>:80)
+#  o SBI Server(http://<any address>:7777)
 #    sbi:
 #      - addr:
 #          - 0.0.0.0
