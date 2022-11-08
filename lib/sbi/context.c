@@ -991,6 +991,7 @@ ogs_sbi_nf_service_t *ogs_sbi_nf_service_add(
     nf_service->name = ogs_strdup(name);
     ogs_assert(nf_service->name);
     nf_service->scheme = scheme;
+    ogs_assert(nf_service->scheme);
 
     nf_service->status = OpenAPI_nf_service_status_REGISTERED;
 
@@ -1475,12 +1476,14 @@ static void nf_service_associate_client(ogs_sbi_nf_service_t *nf_service)
                 client = ogs_sbi_client_add(addr);
                 ogs_assert(client);
             }
-            client->scheme = nf_service->scheme;
         }
     }
 
-    if (client)
+    if (client) {
         OGS_SBI_SETUP_CLIENT(nf_service, client);
+        ogs_assert(nf_service->scheme);
+        client->scheme = nf_service->scheme;
+    }
 }
 
 static void nf_service_associate_client_all(ogs_sbi_nf_instance_t *nf_instance)
