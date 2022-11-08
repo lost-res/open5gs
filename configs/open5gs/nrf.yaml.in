@@ -38,21 +38,25 @@ logger:
 #
 #  o SBI Server(https://<all address available>:443)
 #    sbi:
-#        tls:
-#          key: nrf.key
-#          cert: nrf.crt
+#      - tls:
+#          key: /etc/open5gs/tls/nrf.key
+#          cert: /etc/open5gs/tls/nrf.crt
 #
 #  o SBI Server(https://127.0.0.10:443, http://[::1]:80)
+#    Use the specified certificate to verify peer
+#
 #    sbi:
 #      - addr: 127.0.0.10
 #        tls:
-#          key: nrf.key
-#          cert: nrf.crt
+#          key: /etc/open5gs/tls/nrf.key
+#          cert: /etc/open5gs/tls/nrf.crt
 #      - addr: ::1
 #
-#  o SBI Server(http://nrf.open5gs.org:80)
+#  o SBI Server(http://nrf.open5gs.org:443)
 #    sbi:
-#      name: nrf.open5gs.org
+#      - name: nrf.open5gs.org
+#        tls:
+#          cacert: /etc/open5gs/tls/ca.crt
 #
 #  o SBI Server(http://127.0.0.10:7777)
 #    sbi:
@@ -87,10 +91,13 @@ logger:
 #
 nrf:
     sbi:
-      addr:
+      - addr:
         - 127.0.0.10
         - ::1
-      port: 7777
+        port: 7777
+        tls:
+          key: @sysconfdir@/open5gs/tls/nrf.key
+          cert: @sysconfdir@/open5gs/tls/nrf.crt
 
 #
 # scp:
@@ -106,9 +113,17 @@ nrf:
 #    sbi:
 #      - addr: 127.0.1.10
 #        tls:
-#          key: scp.key
-#          cert: scp.crt
+#          key: /etc/open5gs/tls/nrf.key
+#          cert: /etc/open5gs/tls/nrf.crt
 #      - name: scp.open5gs.org
+#
+#  o SBI Client(http://scp.open5gs.org:443)
+#    Use the specified certificate to verify peer
+#
+#    sbi:
+#      - name: scp.open5gs.org
+#        tls:
+#          cacert: /etc/open5gs/tls/ca.crt
 #
 #  o SBI Client(http://[fd69:f21d:873c:fb::1]:80)
 #    If prefer_ipv4 is true, http://127.0.1.10:80 is selected.
@@ -135,6 +150,9 @@ scp:
     sbi:
       - addr: 127.0.1.10
         port: 7777
+        tls:
+          key: @sysconfdir@/open5gs/tls/nrf.key
+          cert: @sysconfdir@/open5gs/tls/nrf.crt
 
 #
 # parameter:
