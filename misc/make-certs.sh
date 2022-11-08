@@ -2,7 +2,7 @@
 
 if [ 1 -ne $# ]
 then
-    echo You must specify output directory : ./make-certs.sh ./freeDiameter
+    echo You must specify output directory : ./make-certs.sh ../config/tls
     exit;
 fi
 
@@ -12,34 +12,32 @@ echo 01 > demoCA/serial
 touch demoCA/index.txt
 
 # CA self certificate
-openssl req -new -x509 -days 3650 -newkey rsa:2048 -nodes -keyout cakey.pem -out $1/cacert.pem \
+openssl req -new -x509 -days 3650 -newkey rsa:2048 -nodes -keyout $1/ca.key -out $1/ca.crt \
     -subj /CN=ca.localdomain/C=KO/ST=Seoul/O=NeoPlane
 
 # mme
-openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/mme.key.pem
-openssl req -new -batch -out mme.csr.pem -key $1/mme.key.pem \
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/mme.key
+openssl req -new -batch -out $1/mme.csr -key $1/mme.key \
     -subj /CN=mme.localdomain/C=KO/ST=Seoul/O=NeoPlane
-openssl ca -cert $1/cacert.pem -days 3650 -keyfile cakey.pem -in mme.csr.pem -out $1/mme.cert.pem -outdir . -batch -notext
+openssl ca -cert $1/ca.crt -days 3650 -keyfile $1/ca.key -in $1/mme.csr -out $1/mme.crt -outdir . -batch -notext
 
 # hss
-openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/hss.key.pem
-openssl req -new -batch -out hss.csr.pem -key $1/hss.key.pem \
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/hss.key
+openssl req -new -batch -out $1/hss.csr -key $1/hss.key \
     -subj /CN=hss.localdomain/C=KO/ST=Seoul/O=NeoPlane
-openssl ca -cert $1/cacert.pem -days 3650 -keyfile cakey.pem -in hss.csr.pem -out $1/hss.cert.pem -outdir . -batch -notext
+openssl ca -cert $1/ca.crt -days 3650 -keyfile $1/ca.key -in $1/hss.csr -out $1/hss.crt -outdir . -batch -notext
 
 # smf
-openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/smf.key.pem
-openssl req -new -batch -out smf.csr.pem -key $1/smf.key.pem \
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/smf.key
+openssl req -new -batch -out $1/smf.csr -key $1/smf.key \
     -subj /CN=smf.localdomain/C=KO/ST=Seoul/O=NeoPlane
-openssl ca -cert $1/cacert.pem -days 3650 -keyfile cakey.pem -in smf.csr.pem -out $1/smf.cert.pem -outdir . -batch -notext
+openssl ca -cert $1/ca.crt -days 3650 -keyfile $1/ca.key -in $1/smf.csr -out $1/smf.crt -outdir . -batch -notext
 
 # pcrf
-openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/pcrf.key.pem
-openssl req -new -batch -out pcrf.csr.pem -key $1/pcrf.key.pem \
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 -out $1/pcrf.key
+openssl req -new -batch -out $1/pcrf.csr -key $1/pcrf.key \
     -subj /CN=pcrf.localdomain/C=KO/ST=Seoul/O=NeoPlane
-openssl ca -cert $1/cacert.pem -days 3650 -keyfile cakey.pem -in pcrf.csr.pem -out $1/pcrf.cert.pem -outdir . -batch -notext
+openssl ca -cert $1/ca.crt -days 3650 -keyfile $1/ca.key -in $1/pcrf.csr -out $1/pcrf.crt -outdir . -batch -notext
 
 rm -rf demoCA
 rm -f 01.pem 02.pem 03.pem 04.pem
-rm -f cakey.pem
-rm -f mme.csr.pem hss.csr.pem smf.csr.pem pcrf.csr.pem

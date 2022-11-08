@@ -1,4 +1,4 @@
-# Copyright (C) 2019 by Sukchan Lee <acetcom@gmail.com>
+# Copyright (C) 2022 by Sukchan Lee <acetcom@gmail.com>
 
 # This file is part of Open5GS.
 
@@ -15,36 +15,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-open5gs_sysconfdir = join_paths(sysconfdir, 'open5gs')
+tls_sysconfdir = join_paths(open5gs_sysconfdir, 'tls')
 meson.add_install_script(python3_exe, '-c',
-        mkdir_p.format(open5gs_sysconfdir))
+        mkdir_p.format(tls_sysconfdir))
 
-open5gs_conf = '''
-    mme.yaml
-    sgwc.yaml
-    sgwu.yaml
-    smf.yaml
-    amf.yaml
-    upf.yaml
-    hss.yaml
-    pcrf.yaml
-    nrf.yaml
-    scp.yaml
-    ausf.yaml
-    udm.yaml
-    udr.yaml
-    pcf.yaml
-    nssf.yaml
-    bsf.yaml
+tls_security = '''
+    ca.crt
+    mme.crt
+    mme.key
+    hss.crt
+    hss.key
+    smf.crt
+    smf.key
+    pcrf.crt
+    pcrf.key
 '''.split()
 
-foreach file : open5gs_conf
+foreach file : tls_security
     gen = configure_file(
-            input : file + '.in',
+            input : file,
             output : file,
             configuration : conf_data)
     meson.add_install_script(python3_exe, '-c',
-            install_conf.format(gen, open5gs_sysconfdir))
+            install_conf.format(gen, tls_sysconfdir))
 endforeach
-
-subdir('tls')
