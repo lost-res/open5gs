@@ -34,6 +34,7 @@ tls_security = '''
     smf.key
     udm.key
     udr.key
+    af.key
     amf.crt
     ausf.crt
     bsf.crt
@@ -47,6 +48,7 @@ tls_security = '''
     smf.crt
     udm.crt
     udr.crt
+    af.crt
 '''.split()
 
 foreach file : tls_security
